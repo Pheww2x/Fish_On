@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "955439884076",
+    "project_id": "fishon-7909b",
+    "storage_bucket": "fishon-7909b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651805970011:android:79506ab00a8942df5d797e",
+        "android_client_info": {
+          "package_name": "com.example.fishon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiuR9u3Yt2mhhBIif0HzpqhFOdWONZUBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
