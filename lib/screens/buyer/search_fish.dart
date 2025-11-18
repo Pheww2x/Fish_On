@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../../services/firestore_service.dart';
+import '../../services/auth_service.dart';
 import '../../models/fish_model.dart';
 import '../../models/user_model.dart';
-import 'fisherman_profile.dart';
+import '../chat/chat_screen.dart';
 
 class SearchFishScreen extends StatefulWidget {
   const SearchFishScreen({super.key});
@@ -89,6 +90,49 @@ class _SearchFishScreenState extends State<SearchFishScreen> {
         _fishermanResults = filtered;
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _navigateToChat(String fishermanId) async {
+    try {
+      // Get current user
+      final currentUser = AuthService.getCurrentUser();
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please log in to start a chat'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final buyerId = currentUser['uid'];
+      
+      // Create or get existing chat ID
+      final chatId = await _fs.createOrGetChatId(buyerId, fishermanId);
+      
+      // Navigate to chat screen
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              chatId: chatId,
+              otherId: fishermanId,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error starting chat: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -654,14 +698,7 @@ class _SearchFishScreenState extends State<SearchFishScreen> {
           color: Colors.white,
           size: 16,
         ),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => FishermanProfileScreen(
-              fishermanId: fish.ownerId,
-            ),
-          ),
-        ),
+        onTap: () => _navigateToChat(fish.ownerId),
       ),
     );
   }
@@ -725,14 +762,7 @@ class _SearchFishScreenState extends State<SearchFishScreen> {
           color: Colors.white,
           size: 16,
         ),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => FishermanProfileScreen(
-              fishermanId: fisherman.uid,
-            ),
-          ),
-        ),
+        onTap: () => _navigateToChat(fisherman.uid),
       ),
     );
   }

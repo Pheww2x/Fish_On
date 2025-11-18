@@ -259,6 +259,53 @@ class _FishermanProfileScreenState extends State<FishermanProfileScreen> {
     );
   }
 
+  void _openChatWithFish(FishModel fish) async {
+    final currentUserData = AuthService.getCurrentUser();
+    if (currentUserData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in to start a chat'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    final me = await _fs.getUserById(currentUserData['uid']);
+    if (me == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User profile not found'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    try {
+      final chatId = await _fs.createOrGetChatId(me.uid, widget.fishermanId);
+      
+      // Navigate to chat with the quoted fish (no automatic message sending)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            chatId: chatId, 
+            otherId: widget.fishermanId,
+            quotedFish: fish,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error starting chat: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_user == null) {
@@ -627,78 +674,86 @@ class _FishermanProfileScreenState extends State<FishermanProfileScreen> {
                       else
                         ...List.generate(_fish.length, (i) {
                           var f = _fish[i];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF81D4FA), Color(0xFF4FC3F7)],
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF42A5F5).withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                          return GestureDetector(
+                            onTap: () => _openChatWithFish(f),
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF81D4FA), Color(0xFF4FC3F7)],
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF42A5F5).withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: f.imageUrl != null && f.imageUrl!.isNotEmpty
-                                      ? _buildFishImage(f.imageUrl!)
-                                      : Container(
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Color(0xFF42A5F5), Color(0xFF1976D2)],
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: f.imageUrl != null && f.imageUrl!.isNotEmpty
+                                        ? _buildFishImage(f.imageUrl!)
+                                        : Container(
+                                            decoration: const BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [Color(0xFF42A5F5), Color(0xFF1976D2)],
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.set_meal,
+                                              color: Colors.white,
+                                              size: 24,
                                             ),
                                           ),
-                                          child: const Icon(
-                                            Icons.set_meal,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          f.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
                                             color: Colors.white,
-                                            size: 24,
                                           ),
                                         ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        f.name,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                        Text(
+                                          '₱${f.price} • ${f.quantityKg}kg',
+                                          style: TextStyle(
+                                            color: Colors.white.withOpacity(0.9),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        '₱${f.price} • ${f.quantityKg}kg',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         }),
