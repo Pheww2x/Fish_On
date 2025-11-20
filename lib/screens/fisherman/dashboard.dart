@@ -11,6 +11,7 @@ import 'add_fish.dart';
 import 'manage_fish.dart';
 import '../buyer/map_view.dart';
 import '../chat/chat_list.dart';
+import '../tutorial/tutorial_screen.dart';
 
 class FishermanDashboard extends StatefulWidget {
   final AppUser? initialUser;
@@ -486,22 +487,47 @@ class _FishermanDashboardState extends State<FishermanDashboard> {
                           ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          onPressed: () async {
-                            await _auth.signOut();
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
-                          icon: const Icon(
-                            Icons.logout,
-                            color: Colors.white,
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  opaque: false,
+                                  pageBuilder: (_, __, ___) => const TutorialScreen(userRole: 'fisherman'),
+                                ),
+                              ),
+                              icon: const Icon(
+                                Icons.help_outline,
+                                color: Colors.white,
+                              ),
+                              tooltip: 'Tutorial',
+                            ),
                           ),
-                          tooltip: 'Sign out',
-                        ),
+                          const SizedBox(width: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              onPressed: () async {
+                                await _auth.signOut();
+                                Navigator.pushReplacementNamed(context, '/login');
+                              },
+                              icon: const Icon(
+                                Icons.logout,
+                                color: Colors.white,
+                              ),
+                              tooltip: 'Sign out',
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 // Screens
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
+import 'screens/auth/forgot_password.dart';
 import 'screens/fisherman/dashboard.dart';
 import 'screens/buyer/map_view.dart';
 
@@ -169,6 +170,7 @@ class AppRoutes {
   static const String buyerDashboard = '/buyerDashboard';
   static const String buyerMap = '/buyerMap';
   static const String splash = '/splash';
+  static const String forgotPassword = '/forgotPassword';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -210,6 +212,8 @@ class AppRoutes {
         }
       case buyerMap:
         return MaterialPageRoute(builder: (_) => const MapViewScreen());
+      case forgotPassword:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

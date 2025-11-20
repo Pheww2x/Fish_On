@@ -69,6 +69,19 @@ class FirestoreService {
     }
   }
 
+  Future<AppUser?> getUserByEmail(String email) async {
+    try {
+      var query = await _db.collection('users').where('email', isEqualTo: email).limit(1).get();
+      if (query.docs.isNotEmpty) {
+        return AppUser.fromMap(query.docs.first.data());
+      }
+      return null;
+    } catch (e) {
+      print('FirestoreService: Error getting user by email: $e');
+      return null;
+    }
+  }
+
   Stream<List<AppUser>> streamAllUsers() {
     return _db
         .collection('users')

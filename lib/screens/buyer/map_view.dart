@@ -10,6 +10,7 @@ import '../../services/auth_service.dart';
 import '../auth/login.dart';
 import 'fisherman_profile.dart';
 import 'search_fish.dart';
+import '../tutorial/tutorial_screen.dart';
 
 class MapViewScreen extends StatefulWidget {
   const MapViewScreen({super.key});
@@ -572,7 +573,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
                       ),
                       children: [
                         TileLayer(
-                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          urlTemplate: 'https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=iUvY31rVUkSuHFoAAxHu',
                           userAgentPackageName: 'com.example.fishon',
                         ),
                         MarkerLayer(
@@ -669,15 +670,25 @@ class _MapViewScreenState extends State<MapViewScreen> {
                               ),
                               const SizedBox(width: 12),
                               Container(
-                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).primaryColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 20,
+                                child: IconButton(
+                                  onPressed: () {
+                                    if (_buyerLocation != null) {
+                                      setState(() {
+                                        _center = _buyerLocation!;
+                                        _mapKey = UniqueKey();
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.my_location,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Go to my location',
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -702,6 +713,28 @@ class _MapViewScreenState extends State<MapViewScreen> {
                               ),
                               Row(
                                 children: [
+                                  // Tutorial Button
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: IconButton(
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          opaque: false,
+                                          pageBuilder: (_, __, ___) => const TutorialScreen(userRole: 'buyer'),
+                                        ),
+                                      ),
+                                      icon: const Icon(
+                                        Icons.help_outline,
+                                        color: Colors.orange,
+                                      ),
+                                      tooltip: 'Tutorial',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
                                   // Search Button
                                   Container(
                                     decoration: BoxDecoration(

@@ -38,9 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user == null) {
         print('Login: User is null, showing error message'); // Debug
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text("Login failed. Please try again."),
             backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'Forgot Password?',
+              textColor: Colors.white,
+              onPressed: () => Navigator.pushNamed(context, '/forgotPassword'),
+            ),
           ),
         );
       } else {
@@ -79,6 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(
           content: Text("Login failed: $e"),
           backgroundColor: Colors.red,
+          action: SnackBarAction(
+            label: 'Forgot Password?',
+            textColor: Colors.white,
+            onPressed: () => Navigator.pushNamed(context, '/forgotPassword'),
+          ),
         ),
       );
     }
@@ -406,7 +416,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+
                     
                     // Register Link
                     TextButton(
